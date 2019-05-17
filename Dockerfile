@@ -14,9 +14,10 @@ ENV PGHOST="localhost"
 ENV PGDATABASE="RedirectDB"
 ENV PGPASSWORD="123"
 ENV PGPORT=5432
-ENV BAKET="https://offers.website.yandexcloud.net/"
 
-ENV TABLICA="hashes"
+ENV BUCKET="https://offers.website.yandexcloud.net/"
+
+ENV TABLE="hashes"
 ENV HOSTCOLUMN="host"
 ENV HASHCOLUMN="hash"
 ENV BLOCKEDCOLUMN="blocked"
