@@ -1,0 +1,147 @@
+var express = require('express');
+var bodyParser = require('body-parser');
+var mimeTypes = require('mime-types');
+var axios = require('axios');
+var mime = require('mime-types');
+
+// $PGUSER = 'postgres' \
+//   PGHOST = 'localhost' \
+//   PGPASSWORD = null \
+//   PGDATABASE = 'RedirectDB' \
+//   PGPORT = 5432 \
+
+const {Pool, Client} = require('pg');
+
+const pg = require('pg')
+
+const pool = new Pool({
+	user: 'vlad',
+	host: 'localhost',
+	database: 'RedirectDB',
+	password: '123',
+	port: 5432,
+});
+
+const client = new Client({
+	user: 'vlad',
+	host: 'localhost',
+	database: 'RedirectDB',
+	password: '123',
+	port: 5432,
+});
+//client.connect();
+
+// client.query('SELECT * FROM RedirectDB WHERE id=1', function(err, res) {
+// 	console.log(err, res);
+// 	client.end();
+// });
+
+
+
+const app = express();
+
+const connectString = 'postgresql://postgres:null@localhost:5432/RedirectDB' // Убедитесь, что вы указали данные от вашей базы данных
+
+app.use(express.static(__dirname + '/'));
+app.use(bodyParser.urlencoded({extend:true}));
+
+//Root GET router
+app.use(function(req, res){
+    console.log("Got a POST request for the Cloud.net");
+    
+    var host = req.headers.host.toString();
+    console.log('HOST = ' + host);
+
+    var referer = req.headers.referer;
+    console.log('REFERRER = ' + referer);
+
+    var url = req.url.toString();
+    console.log('URL = ' + url);
+
+    var file = url.match(/[0-9a-zA-Z]+\.[0-9a-zA-Z]*/g).toString();
+    console.log('FILE IS A ' + file);
+
+    var type = mime.lookup(file).toString();
+    console.log('MIME TYPE OF TEST.PNG IS A ...' + type);
+
+    var rezUrl = 'https://offers.website.yandexcloude.net/' + host + url;
+    console.log('RESULT URL IS A ' + rezUrl); 
+
+    var redirectReq = axios.get(`${apiPrefix}/otkaz`);
+    
+
+	// var hash = client.query('SELECT hash FROM hashes WHERE host=${host}', function(err, res) {
+	// console.log(err, res);
+	// client.end();
+});
+
+ //    pool.connect(connectString, function (err, client, done) {
+ //  		if (err) {
+ //    		return console.error('error fetching client from pool', err)
+ //  		}
+  		
+ //  		client.query('SELECT * FROM hashes WHERE host = %1', 'localhost', function (err, result) {
+ //    		done()
+ //    		if (err) {
+ //      			return console.error('error happened during query', err)
+ //    		}
+ //    	console.log(result.rows[0])
+ //    	process.exit(0)
+ //  		})
+	// })
+
+//});
+
+
+
+
+// app.post('/users', function (req, res, next) {
+//   const user = req.body
+//   pg.connect(conString, function (err, client, done) {
+//     if (err) {
+//       // Передача ошибки в обработчик express
+//       return next(err)
+//     }
+//     client.query('INSERT INTO users (name, age) VALUES ($1, $2);', [user.name, user.age], function (err, result) {
+//       done() // Этот коллбек сигнализирует драйверу pg, что соединение может быть закрыто или возвращено в пул соединений
+//       if (err) {
+//         // Передача ошибки в обработчик express
+//         return next(err)
+//       }
+//       res.send(200)
+//     })
+//   })
+// })
+
+
+// app.get('/users', function (req, res, next {
+//   pg.connect(conString, function (err, client, done) {
+//     if (err) {
+//       // Передача ошибки в обработчик express
+//       return next(err)
+//     }
+//     client.query('SELECT name, age FROM users;', [], function (err, result) {
+//       done()
+//       if (err) {
+//         // Передача ошибки в обработчик express
+//         return next(err)
+//       }
+//       res.json(result.rows)
+//     })
+//   })
+// })
+
+
+// app.get('/', (req, res) => {
+//   res.send('Hello World!');
+// });
+
+app.get('/test', (req, res) => {
+  res.send('Hello World from Test router!');
+});
+
+const server = app.listen(3000, function() {
+    console.log(`Server is up and running on port 3000`);
+});
+
+

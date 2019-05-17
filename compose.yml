@@ -1,0 +1,15 @@
+app:
+  build: docker build
+  working_dir: /app
+
+  ports:
+    - 80:3000
+  expose:
+    -3000
+  environment:
+    PGUSER: redirector
+    PGHOST: localhost
+    PGDATABASE: RedirectDB
+    PGPASSWORD: redirector
+    PGPORT: 5432
+    BASKET: https://offers.website.yandexcloud.net"
