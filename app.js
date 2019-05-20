@@ -49,19 +49,20 @@ app.get('/*', async function(req, res){
     function upload() {
        return hash = new Promise(function(resolve, reject) {
         //pool.query('SELECT hash FROM hashes WHERE host=$1', [host], function(err, resp){
-        var TABLICA = process.env.TABLICA;
-        var HOSTCOLUMN = process.env.HOSTCOLUMN;
-        var HASHCOLUMN = process.env.HASHCOLUMN;
-        const BLOCKEDCOLUMN = process.env.BLOCKEDCOLUMN;
+        var TABLE = process.env.TABLE;
+        var HOST_COLUMN = process.env.HOST_COLUMN;
+        var HASH_COLUMN = process.env.HASH_COLUMN;
+        const BLOCKED_COLUMN = process.env.BLOCKED_COLUMN;
         
-        pool.query('SELECT ' + HASHCOLUMN + ' FROM ' + TABLICA + ' WHERE ' + HOSTCOLUMN + '=$1', [host], function(err, resp){
-         
+        pool.query('SELECT ' + HASH_COLUMN + ', ' + BLOCKED_COLUMN + ' FROM ' + TABLE + ' WHERE ' + HOST_COLUMN + '=$1', [host], function(err, resp){
+        //AND ' + BLOCKED_COLUMN + '=true' 
         if (err) {
          return reject(err)
         }        
         
         if(!resp.rows[0]) {
                 //axios({url:'https://offers.website.yandexcloud.net/404.html',
+                //axios({url:'https://offers.website.yandexcloud.net/403.html',
             axios({url:BAKET + '404.html',
                 method: 'GET',
                 responseType: 'arraybuffer'
@@ -75,6 +76,24 @@ app.get('/*', async function(req, res){
                 
             return;
         }
+
+        if(resp.rows[0].blocked === true) {
+                //axios({url:'https://offers.website.yandexcloud.net/404.html',
+                //axios({url:'https://offers.website.yandexcloud.net/403.html',
+            axios({url:BAKET + '403.html',
+                method: 'GET',
+                responseType: 'arraybuffer'
+                }).then(function(response) {
+                        res.set('Content-Type', 'text/html');
+                        res.send(response.data)
+                    })
+                .catch(function(err){
+                    console.error('AXIOS ERROR', err.stack);                
+                })
+                
+            return;
+        }
+
         try{
             resolve(resp.rows[0].hash);
         } catch(err){
@@ -88,7 +107,8 @@ app.get('/*', async function(req, res){
         .then(
             function(result) {
             console.log('RESULT FROM PROMISE' + result);
-            return result;
+                return result;
+            
         },
             function(error) {
                 return error;
